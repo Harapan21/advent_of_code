@@ -18,8 +18,8 @@ fn part_two(mut mass: f32) -> f32 {
     return result;
 }
 
-fn main() -> Result<(), std::io::Error> {
-    let file = File::open("input.txt")?;
+fn main() {
+    let file = File::open("./input.txt").expect("file not found");
     let reader = std::io::BufReader::new(file);
     let bahan_bakar: i32 = reader
         .lines()
@@ -27,5 +27,4 @@ fn main() -> Result<(), std::io::Error> {
         .map(|e| part_two(e.unwrap().parse::<f32>().unwrap()) as i32)
         .sum();
     println!("{}", bahan_bakar);
-    Ok(())
 }
