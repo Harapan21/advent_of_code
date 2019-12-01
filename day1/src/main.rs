@@ -9,7 +9,7 @@ fn part_one(mass: f32) -> f32 {
 fn part_two(mut mass: f32) -> f32 {
     let mut result = 0f32;
     loop {
-        mass = (mass / 3.0 - 2.0).trunc();
+        mass = part_one(mass);
         if mass as i32 <= 0 {
             break;
         }
