@@ -1,7 +1,8 @@
+#![allow(dead_code)]
 use std::fs::File;
 use std::io::prelude::*;
+use std::rc::Rc;
 
-#[allow(dead_code)]
 fn file_reader(file: &'static str) -> Vec<usize> {
     let file = File::open(file).expect("Failed to load file");
     let mut reader = std::io::BufReader::new(file);
@@ -25,21 +26,38 @@ fn compute(vec: Vec<usize>) -> Vec<usize> {
             let input2 = vec2[element[2]];
             let output = element[3];
             match op_code {
-                1 => std::mem::replace(&mut vec2[output], input + input2),
-                2 => std::mem::replace(&mut vec2[output], input * input2),
-                99 => break,
+                1 => vec2[output] = input + input2,
+                2 => vec2[output] = input * input2,
+                99 => continue,
                 _ => unreachable!(),
             };
-
             element.clear();
         }
     }
     vec2
 }
 
+fn find(vec: Vec<usize>, get: usize) -> Rc<Option<usize>> {
+    let mut result = Rc::new(None);
+    let mut temp_vec = vec;
+    for noun in 0..=99 {
+        for verb in 0..=99 {
+            temp_vec[1] = noun;
+            temp_vec[2] = verb;
+            let computes = compute(temp_vec.to_owned());
+            if &computes[0] == &get {
+                *Rc::get_mut(&mut result).unwrap() = Some(100 * noun + verb);
+            };
+        }
+    }
+    return result;
+}
+
 fn main() {
     let vec = file_reader("input.txt");
-    let result = compute(vec);
+    let get = 19690720;
+    let result = find(vec, get);
+
     println!("result:\t {:?}", result);
 }
 
@@ -66,5 +84,13 @@ mod tests {
         let exac = vec![30, 1, 1, 4, 2, 5, 6, 0, 99];
         let result = compute(test3);
         assert_eq!(result, exac);
+    }
+    #[test]
+    fn find_test() {
+        let vec = file_reader("input.txt");
+        let get = 3267740;
+        let exac = Some(1202);
+        let result = find(vec, get);
+        assert_eq!(*result, exac);
     }
 }
